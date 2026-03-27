@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DevOps Autopilot Agent 🤖</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Syne:wght@400;600;700&family=JetBrains+Mono:wght@300;400;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #050810;
+    --bg2: #080d18;
+    --surface: #0d1526;
+    --surface2: #111d35;
+    --border: #1a2d52;
+    --blue: #0a84ff;
+    --blue2: #38bdf8;
+    --blue3: #1d4ed8;
+    --glow: #0a84ff55;
+    --text: #e2eaf7;
+    --muted: #6b84a8;
+    --accent: #00d4ff;
+    --green: #00e5a0;
+    --orange: #ff6b35;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; overflow-x: hidden; }
+
+  .grid-bg {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image: linear-gradient(rgba(10,132,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(10,132,255,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    animation: gridMove 20s linear infinite;
+  }
+  @keyframes gridMove { from{transform:translateY(0);} to{transform:translateY(60px);} }
+
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 48px;
+    background: rgba(5,8,16,0.88); backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo { font-family:'Orbitron',monospace; font-weight:700; font-size:1rem; color:var(--blue2); letter-spacing:2px; text-decoration:none; display:flex; align-items:center; gap:10px; }
+  .nav-dot { width:8px; height:8px; border-radius:50%; background:var(--green); animation:pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.5;transform:scale(1.5);} }
+  .nav-links { display:flex; gap:32px; }
+  .nav-links a { font-size:0.78rem; letter-spacing:2px; text-transform:uppercase; color:var(--muted); text-decoration:none; transition:color 0.3s; font-family:'JetBrains Mono',monospace; }
+  .nav-links a:hover, .nav-links a.active { color:var(--blue2); }
+  .nav-cta { font-family:'JetBrains Mono',monospace; font-size:0.72rem; letter-spacing:2px; text-transform:uppercase; padding:10px 24px; border-radius:4px; background:transparent; border:1px solid var(--blue); color:var(--blue2); text-decoration:none; transition:all 0.3s; }
+  .nav-cta:hover { background:var(--blue); color:#fff; box-shadow:0 0 24px var(--glow); }
+
+  /* HERO */
+  .hero { position:relative; z-index:1; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:120px 24px 80px; overflow:hidden; }
+  .orb { position:absolute; border-radius:50%; pointer-events:none; filter:blur(80px); opacity:0.22; }
+  .orb1 { width:700px; height:700px; background:radial-gradient(circle,#0a84ff,transparent); top:-150px; left:-250px; animation:orbF 8s ease-in-out infinite; }
+  .orb2 { width:500px; height:500px; background:radial-gradient(circle,#00d4ff,transparent); bottom:-50px; right:-150px; animation:orbF 10s ease-in-out infinite reverse; }
+  .orb3 { width:300px; height:300px; background:radial-gradient(circle,#00e5a0,transparent); top:50%; left:55%; opacity:0.1; animation:orbF 7s ease-in-out infinite 1s; }
+  @keyframes orbF { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-40px);} }
+
+  .hero-badge { display:inline-flex; align-items:center; gap:8px; font-family:'JetBrains Mono',monospace; font-size:0.7rem; letter-spacing:3px; text-transform:uppercase; padding:8px 20px; border-radius:40px; border:1px solid rgba(10,132,255,0.4); background:rgba(10,132,255,0.08); color:var(--blue2); margin-bottom:40px; animation:fadeUp 0.8s ease both; }
+  .blink { width:6px; height:6px; border-radius:50%; background:var(--green); animation:pulse 1.5s infinite; }
+
+  .hero-title { font-family:'Orbitron',monospace; font-weight:900; font-size:clamp(2.4rem,7vw,5.5rem); line-height:1.05; margin-bottom:10px; background:linear-gradient(135deg,#fff 30%,var(--blue2) 70%,var(--accent)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; animation:fadeUp 0.8s ease 0.1s both; }
+  .hero-emoji { -webkit-text-fill-color:initial; }
+  .hero-tagline { font-size:clamp(1rem,2.2vw,1.3rem); color:var(--muted); max-width:600px; line-height:1.75; margin-bottom:52px; animation:fadeUp 0.8s ease 0.2s both; }
+  .hero-tagline strong { color:var(--blue2); }
+
+  .hero-btns { display:flex; gap:16px; flex-wrap:wrap; justify-content:center; animation:fadeUp 0.8s ease 0.3s both; }
+  .btn-p { padding:15px 40px; border-radius:6px; font-family:'Orbitron',monospace; font-size:0.72rem; letter-spacing:3px; text-transform:uppercase; font-weight:700; background:linear-gradient(135deg,var(--blue3),var(--blue)); color:#fff; text-decoration:none; border:none; box-shadow:0 0 40px rgba(10,132,255,0.35); transition:all 0.3s; cursor:pointer; }
+  .btn-p:hover { transform:translateY(-2px); box-shadow:0 0 60px rgba(10,132,255,0.55); }
+  .btn-s { padding:15px 40px; border-radius:6px; font-family:'Orbitron',monospace; font-size:0.72rem; letter-spacing:3px; text-transform:uppercase; font-weight:700; background:transparent; color:var(--blue2); text-decoration:none; border:1px solid var(--border); transition:all 0.3s; }
+  .btn-s:hover { border-color:var(--blue); background:rgba(10,132,255,0.08); transform:translateY(-2px); }
+
+  /* STATS */
+  .stats { position:relative;z-index:1; display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--border); border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
+  .stat { background:var(--bg2); padding:40px 24px; text-align:center; transition:background 0.3s; }
+  .stat:hover { background:var(--surface); }
+  .stat-n { font-family:'Orbitron',monospace; font-size:2.2rem; font-weight:900; color:var(--blue2); display:block; margin-bottom:8px; }
+  .stat-l { font-size:0.72rem; color:var(--muted); letter-spacing:2px; text-transform:uppercase; font-family:'JetBrains Mono',monospace; }
+
+  /* SECTIONS */
+  section.s { position:relative;z-index:1; padding:96px 48px; }
+  .si { max-width:1100px; margin:0 auto; }
+  .slabel { font-family:'JetBrains Mono',monospace; font-size:0.68rem; letter-spacing:4px; text-transform:uppercase; color:var(--blue); margin-bottom:16px; display:flex; align-items:center; gap:12px; }
+  .slabel::before { content:''; display:block; width:28px; height:1px; background:var(--blue); }
+  .stitle { font-family:'Orbitron',monospace; font-weight:700; font-size:clamp(1.6rem,3.5vw,2.6rem); margin-bottom:20px; background:linear-gradient(90deg,#fff,var(--blue2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .sdesc { color:var(--muted); font-size:1rem; line-height:1.85; max-width:640px; }
+
+  /* PROBLEM */
+  .prob-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; margin-top:56px; }
+  .prob-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:36px; position:relative; overflow:hidden; transition:all 0.4s; }
+  .prob-card::before { content:''; position:absolute; top:0;left:0;right:0; height:2px; background:linear-gradient(90deg,transparent,var(--orange),transparent); opacity:0; transition:opacity 0.4s; }
+  .prob-card:hover { border-color:rgba(255,107,53,0.4); transform:translateY(-4px); }
+  .prob-card:hover::before { opacity:1; }
+  .prob-ic { font-size:2.5rem; margin-bottom:18px; display:block; }
+  .prob-card h3 { font-family:'Orbitron',monospace; font-size:0.9rem; margin-bottom:10px; color:var(--orange); letter-spacing:1px; }
+  .prob-card p { color:var(--muted); font-size:0.88rem; line-height:1.7; }
+
+  /* SOLUTION */
+  .sol-grid { display:grid; grid-template-columns:1fr 1fr; gap:48px; margin-top:56px; align-items:center; }
+  .sol-feats { display:flex; flex-direction:column; gap:18px; }
+  .feat { display:flex; align-items:flex-start; gap:18px; background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:22px; transition:all 0.3s; }
+  .feat:hover { border-color:var(--blue); transform:translateX(6px); }
+  .feat-ic { width:44px; height:44px; border-radius:10px; flex-shrink:0; background:linear-gradient(135deg,rgba(10,132,255,0.18),rgba(0,212,255,0.08)); border:1px solid rgba(10,132,255,0.3); display:flex; align-items:center; justify-content:center; font-size:1.3rem; }
+  .feat h4 { font-family:'Orbitron',monospace; font-size:0.78rem; letter-spacing:1px; margin-bottom:6px; color:var(--blue2); }
+  .feat p { color:var(--muted); font-size:0.83rem; line-height:1.6; }
+
+  .terminal { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:28px; }
+  .t-bar { display:flex; align-items:center; gap:8px; margin-bottom:24px; }
+  .td { width:10px; height:10px; border-radius:50%; }
+  .td1{background:#ff5f57;} .td2{background:#ffbd2e;} .td3{background:#28ca41;}
+  .t-title { font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--muted); flex:1; text-align:center; }
+  .tl { font-family:'JetBrains Mono',monospace; font-size:0.77rem; line-height:2; display:flex; gap:10px; }
+  .tp{color:var(--green);} .tc{color:var(--blue2);} .to{color:var(--muted);} .ts{color:var(--green);} .tw{color:#fbbf24;}
+  .cursor { display:inline-block; width:8px; height:14px; background:var(--blue2); animation:blink 1s step-end infinite; vertical-align:middle; }
+  @keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+
+  /* CTA SECTION */
+  .cta-s { position:relative;z-index:1; padding:80px 48px; text-align:center; background:var(--bg2); }
+  .cta-inner { max-width:640px; margin:0 auto; }
+  .cta-lbl { font-family:'JetBrains Mono',monospace; font-size:0.72rem; letter-spacing:3px; text-transform:uppercase; color:var(--muted); margin-bottom:20px; }
+  .cta-title { font-family:'Orbitron',monospace; font-size:clamp(1.6rem,3.5vw,2.4rem); margin-bottom:20px; background:linear-gradient(90deg,#fff,var(--blue2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .cta-sub { color:var(--muted); font-size:0.98rem; line-height:1.8; margin-bottom:40px; }
+
+  footer { position:relative;z-index:1; border-top:1px solid var(--border); padding:28px 48px; display:flex; align-items:center; justify-content:space-between; background:var(--bg); }
+  .fb { font-family:'Orbitron',monospace; font-size:0.8rem; color:var(--muted); letter-spacing:2px; }
+  .fs { font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--muted); display:flex; align-items:center; gap:8px; }
+  .fs .dot { width:6px; height:6px; border-radius:50%; background:var(--green); animation:pulse 2s infinite; }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(24px);} to{opacity:1;transform:translateY(0);} }
+  hr.div { border:none; border-top:1px solid var(--border); }
+
+  @media(max-width:900px){
+    nav{padding:14px 20px;}
+    .nav-links{display:none;}
+    section.s{padding:64px 20px;}
+    .stats{grid-template-columns:repeat(2,1fr);}
+    .prob-grid,.sol-grid{grid-template-columns:1fr;}
+    footer{flex-direction:column;gap:10px;text-align:center;}
+  }
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<nav>
+  <a class="nav-logo" href="index.html"><div class="nav-dot"></div>AUTOPILOT</a>
+  <div class="nav-links">
+    <a href="index.html" class="active">Overview</a>
+    <a href="details.html">Details</a>
+  </div>
+  <a href="details.html" class="nav-cta">Full Details →</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+  <div class="hero-badge"><span class="blink"></span> Hackathon Project 2025 — AI × DevOps</div>
+  <h1 class="hero-title">DevOps Autopilot<br>Agent <span class="hero-emoji">🤖</span></h1>
+  <p class="hero-tagline">Automatically <strong>detect, analyze, and fix</strong> CI/CD failures using AI — so your engineers can focus on shipping, not debugging.</p>
+  <div class="hero-btns">
+    <a href="details.html" class="btn-p">Explore Details</a>
+    <a href="#problem" class="btn-s">See the Problem ↓</a>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat"><span class="stat-n">80%</span><span class="stat-l">Faster Debugging</span></div>
+  <div class="stat"><span class="stat-n">&lt;60s</span><span class="stat-l">Mean Fix Time</span></div>
+  <div class="stat"><span class="stat-n">∞</span><span class="stat-l">Pipelines Supported</span></div>
+  <div class="stat"><span class="stat-n">0</span><span class="stat-l">Manual Interventions</span></div>
+</div>
+<hr class="div"/>
+
+<!-- PROBLEM -->
+<section class="s" id="problem">
+  <div class="si">
+    <div class="slabel">01 — Problem Statement</div>
+    <h2 class="stitle">The DevOps Debugging Crisis</h2>
+    <p class="sdesc">Engineering teams lose thousands of hours annually to repetitive CI/CD failures. The cost isn't just time — it's morale, velocity, and competitive edge.</p>
+    <div class="prob-grid">
+      <div class="prob-card">
+        <span class="prob-ic">⏱️</span>
+        <h3>Time Drain</h3>
+        <p>Engineers spend 3–5 hours daily triaging pipeline failures — time stolen from building features that actually matter to users.</p>
+      </div>
+      <div class="prob-card">
+        <span class="prob-ic">🔄</span>
+        <h3>Repetitive Errors</h3>
+        <p>80% of CI/CD failures are recurring patterns — missing deps, misconfigs, flaky tests — yet every fix starts from scratch.</p>
+      </div>
+      <div class="prob-card">
+        <span class="prob-ic">💸</span>
+        <h3>Operational Cost</h3>
+        <p>High-cost engineers doing low-value triage. Delayed deployments cascade into delayed releases and SLA breaches.</p>
+      </div>
+    </div>
+  </div>
+</section>
+<hr class="div"/>
+
+<!-- SOLUTION -->
+<section class="s" style="background:var(--bg2);">
+  <div class="si">
+    <div class="slabel">02 — Proposed Solution</div>
+    <h2 class="stitle">Meet Your Autonomous Agent</h2>
+    <div class="sol-grid">
+      <div class="sol-feats">
+        <p class="sdesc" style="margin-bottom:28px;">An AI-powered agent that operates autonomously across your entire CI/CD surface — not a chatbot, not a copilot, but a fully autonomous system that acts.</p>
+        <div class="feat"><div class="feat-ic">🔍</div><div><h4>Failure Detection</h4><p>Hooks into GitHub Actions and cloud CI systems — detects failures in real time as they happen.</p></div></div>
+        <div class="feat"><div class="feat-ic">🧠</div><div><h4>Intelligent Log Analysis</h4><p>LLM-powered analysis scans thousands of log lines in seconds, identifying patterns humans miss.</p></div></div>
+        <div class="feat"><div class="feat-ic">🎯</div><div><h4>Root Cause Identification</h4><p>Beyond surface errors — the agent traces failure chains back to origin, with confidence scoring.</p></div></div>
+        <div class="feat"><div class="feat-ic">🔧</div><div><h4>Automated Fix + Auto PR</h4><p>Applies known fixes autonomously and opens Pull Requests with full reasoning and context.</p></div></div>
+      </div>
+      <div class="terminal">
+        <div class="t-bar">
+          <div class="td td1"></div><div class="td td2"></div><div class="td td3"></div>
+          <div class="t-title">autopilot-agent — live session</div>
+        </div>
+        <div class="tl"><span class="tp">▶</span><span class="tc">agent.detect("pipeline:failure")</span></div>
+        <div class="tl"><span class="to">&nbsp;&nbsp;→ Pipeline #4821 failed @ step "build"</span></div>
+        <div class="tl"><span class="tp">▶</span><span class="tc">agent.fetch_logs(pipeline_id)</span></div>
+        <div class="tl"><span class="to">&nbsp;&nbsp;→ 2,847 log lines collected from CloudWatch</span></div>
+        <div class="tl"><span class="tp">▶</span><span class="tc">agent.analyze(logs, model="bedrock")</span></div>
+        <div class="tl"><span class="tw">&nbsp;&nbsp;⚠ Error: Cannot find module 'axios'</span></div>
+        <div class="tl"><span class="to">&nbsp;&nbsp;→ Root cause: Missing npm dependency</span></div>
+        <div class="tl"><span class="tp">▶</span><span class="tc">agent.fix(confidence=0.97)</span></div>
+        <div class="tl"><span class="ts">&nbsp;&nbsp;✓ Fix applied: npm install axios</span></div>
+        <div class="tl"><span class="ts">&nbsp;&nbsp;✓ Auto PR #482 opened → main branch</span></div>
+        <div class="tl"><span class="tp">▶</span><span class="tc">agent.monitor() <span class="cursor"></span></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+<hr class="div"/>
+
+<!-- CTA -->
+<section class="cta-s">
+  <div class="cta-inner">
+    <p class="cta-lbl">Want the full picture?</p>
+    <h2 class="cta-title">Architecture, AWS Services,<br>Flow Diagrams & More</h2>
+    <p class="cta-sub">The details page covers the complete agent flow, system architecture, AWS integration, real-world example scenarios, features, impact metrics, and future roadmap.</p>
+    <a href="details.html" class="btn-p">View Full Details →</a>
+  </div>
+</section>
+
+<footer>
+  <div class="fb">DEVOPS AUTOPILOT AGENT</div>
+  <div class="fs"><div class="dot"></div>Agent Status: Active — Hackathon 2025</div>
+</footer>
+</body>
+</html>
